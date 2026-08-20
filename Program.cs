@@ -13,7 +13,6 @@ using System.Text.RegularExpressions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 var app = builder.Build();
 var connString = builder.Configuration.GetConnectionString("Postgres");
@@ -32,17 +31,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 var embeddingClient = new EmbeddingClient("text-embedding-3-small", apiKey);
-app.MapGet("/test", async () =>
-{
-    var chunks = new List<Chunk>();
-    var file = "C:\\Users\\shire\\.claude\\projects\\C--Users-shire-OneDrive-Documents-Interview-Prep-interviews-prep\\memory\\sd_gaps.md";
-    var text = await File.ReadAllTextAsync(file);
-    text = Regex.Replace(text, @"\A---\r?\n.*?\r?\n---(\r?\n|\z)", "",
-                         RegexOptions.Singleline); //remove YAML frontmatter
-
-    foreach (var chunk in PackUnits(SplitIntoUnits(text), minSize: 150, maxSize: 1000))
-        chunks.Add(new Chunk(file, chunk));
-});
 
 app.MapGet("/dbcheck", async () =>
 {
@@ -98,13 +86,18 @@ app.MapGet("/ingest", async () =>
 
 app.MapPost("/ask", async (AskRequest req) => {
     var sw = Stopwatch.StartNew();
+    
     Vector questionVector = await EmbedQuestion(req.Question, embeddingClient);
     var tEmbed = sw.ElapsedMilliseconds;
+    
     await using var conn = await dataSource.OpenConnectionAsync();
+    
     var topChunksByDistance = await GetTopChunksWithDedup(conn, questionVector);
     var tQuery = sw.ElapsedMilliseconds;
+    
     var rerankedTopChunks = await Reranker.RerankAsync(chatClient, req.Question, topChunksByDistance);
     var tRerank = sw.ElapsedMilliseconds;
+    
     var contextString = string.Join("\n\n", rerankedTopChunks.Select(x => $"[source: {Path.GetFileName(x.Source)}]\n{x.Content}"));
     var messages = new List<ChatMessage>
     {
@@ -113,9 +106,11 @@ app.MapPost("/ask", async (AskRequest req) => {
         new UserChatMessage($"Context:\n{contextString}\n\nQuestion: {req.Question}")
     };
     ChatCompletion completion = await chatClient.CompleteChatAsync(messages);
+    
     var tGen = sw.ElapsedMilliseconds;
     Console.WriteLine($"embed {tEmbed} | query {tQuery - tEmbed} | rerank {tRerank - tQuery} | " +
     $"generate {tGen - tRerank} | TOTAL {tGen}");
+    
     return completion.Content[0].Text;
 });
 
