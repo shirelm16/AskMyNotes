@@ -132,8 +132,8 @@ The first working version answered in **30.6 seconds** — unusable. Instrumenti
 showed the reranker was almost all of it, scoring candidates one call at a time. Batching it
 (18 candidates per call, 4 concurrent, with a per-batch fallback to distance order if the
 returned score count doesn't match) brought it to **8.2 seconds**. Retrieval quality held at
-15/15 with MRR 0.763 — the speed-up cost nothing in accuracy, which is only knowable because
-the golden set was there to check it against.
+15 of 15 questions, with the correct source usually first — the speed-up cost nothing in
+accuracy, which is only knowable because the test set was there to check it against.
 
 Warm breakdown:
 
