@@ -27,17 +27,22 @@ The retrieval quality is measured rather than assumed.
 
 ## What the evaluation taught
 
-Measuring it turned out to be more useful than the final score, and the runs that made things
-worse were kept rather than quietly re-run.
+Measuring it turned out to be more useful than the final score. When a change made the score
+worse, that result was written down and kept, rather than re-run until it looked better.
 
-- **An average can hide two problems cancelling out.** One change scored the same before and
-  after, so it looked pointless. Checking question by question showed it had fixed one thing
-  and broken another.
+- **The overall score can hide two problems cancelling out.** One change came out with exactly
+  the same score before and after, so it looked like it had done nothing. Looking at each of
+  the 15 questions on its own showed it had fixed one and broken another.
 - **Adding more content made the search worse, not better.** Restoring text that had been
   dropped by mistake pushed a correct answer from 3rd place out of the top 5 — the new text
   simply outranked it.
-- **One change lowered the score and was kept anyway**, because by then I understood why it
-  had, and the reason was a good one.
+- **One change lowered the score and was kept anyway.** Stripping the metadata header off the
+  top of each note was clearly right — it was filler being stored as if it were content. The
+  score dropped all the same, and the cause turned out to be something else it had exposed:
+  with the header gone, one note's four topics packed into a single block instead of getting a
+  block each, and the answer that used to have its own block fell from 1st place to 19th. The
+  change stayed. The packing was the real bug. "The number went down but the change was good"
+  is exactly how bad changes survive, so it only counts when you can point at the mechanism.
 - **Fifteen questions is a small test.** One question is nearly 7% of the score, so a change
   that moves a single question is a hint worth chasing, not a result.
 
