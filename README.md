@@ -58,10 +58,13 @@ any other AI feature.
 ```bash
 docker run -d --name pgvector -e POSTGRES_PASSWORD=... -p 5432:5432 pgvector/pgvector:pg16
 dotnet user-secrets set "OpenAI:ApiKey" "sk-..."
+
+cp appsettings.Local.example.json appsettings.Local.json   # then edit Notes:Roots
 dotnet run
 ```
 
-Then point the ingest endpoint at a folder of markdown and ask it something —
+`Notes:Roots` is the list of folders to index — it has no default, because the folders are
+wherever your notes happen to live. Then call `/ingest` and ask it something —
 [`AskMyNotes.http`](AskMyNotes.http) has the requests ready to send.
 
 ## Design notes

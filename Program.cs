@@ -44,11 +44,17 @@ app.MapGet("/dbcheck", async () =>
 
 app.MapGet("/ingest", async () =>
 {
-    var roots = new[]
-    {
-        @"C:/Users/shire/OneDrive/Documents/Interview Prep/interviews-prep/reports",
-        @"C:/Users/shire/.claude/projects/C--Users-shire-OneDrive-Documents-Interview-Prep-interviews-prep/memory"
-    };
+    // Which folders to index. Configured, not hardcoded: these are absolute paths on
+    // whoever's machine is running this, and mine named things I would rather not publish.
+    var roots = app.Configuration.GetSection("Notes:Roots").Get<string[]>();
+    if (roots is null or { Length: 0 })
+        return Results.BadRequest(
+            "No note folders configured. Set Notes:Roots — in appsettings.Local.json, " +
+            "in user-secrets, or as Notes__Roots__0 in the environment.");
+
+    var missing = roots.Where(r => !Directory.Exists(r)).ToArray();
+    if (missing.Length > 0)
+        return Results.BadRequest($"These configured folders don't exist: {string.Join(", ", missing)}");
     var chunks = await Chunker(roots);
     var batchSize = 100;
 
@@ -81,7 +87,7 @@ app.MapGet("/ingest", async () =>
     }
 
     await tx.CommitAsync();
-    return new { chunks = chunks.Count };
+    return Results.Ok(new { chunks = chunks.Count });
 });
 
 app.MapPost("/ask", async (AskRequest req) => {
