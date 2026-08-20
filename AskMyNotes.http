@@ -1,0 +1,9 @@
+@AskMyNotes_HostAddress = http://localhost:5137
+
+###
+POST {{AskMyNotes_HostAddress}}/ask
+Content-Type: application/json
+
+{
+  "question": "How does the file-inputs feature keep tenants isolated?"
+}

@@ -1,0 +1,16 @@
+bin/
+obj/
+.vs/
+*.user
+
+# Local machine config. Connection strings and the OpenAI key are read from
+# configuration, so they stay in user-secrets or the environment, never here.
+appsettings.Local.json
+
+# The evaluation ran over a corpus of my own private notes, so the run log and
+# the labelled golden set are not public — the questions and the quoted chunks
+# carry personal content. eval/PLAYBOOK.md is the method, which is the part that
+# transfers anyway.
+eval/RESULTS.md
+eval/BASELINE.md
+eval/golden_set.json
