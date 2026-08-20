@@ -27,10 +27,10 @@ The retrieval quality is measured rather than assumed.
 
 ## What the evaluation taught
 
-Measuring it turned out to be more useful than the final score. When a change made the score
+Measuring turned out to be more useful than the final score. When a change made the score
 worse, that result was written down and kept, rather than re-run until it looked better.
 
-- **The overall score can hide two problems cancelling out.** One change came out with exactly
+- **The overall score can hide two problems cancelling out.** One change came out with exactly  
   the same score before and after, so it looked like it had done nothing. Looking at each of
   the 15 questions on its own showed it had fixed one and broken another.
 - **Adding more content made the search worse, not better.** Restoring text that had been
