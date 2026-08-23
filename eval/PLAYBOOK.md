@@ -37,7 +37,7 @@ Two separate things break it, and they are worth keeping apart:
   from one run to the next, so a single result proves nothing either way.
 
 Retrieval here has only the first problem. It is entirely predictable — the same question
-against the same index returns the same chunks every time. It still needs a rate, because
+against the same stored chunks returns the same results every time. It still needs a rate, because
 "correct" is a list rather than a single value, and because the useful question is not
 "is it right" but "how often is it right, and is that number moving".
 
@@ -119,7 +119,7 @@ Then run the eval once, and hold your result up against it:
 
 The distinction matters because those two need completely different work. A score close to
 guessing is a structural bug: embeddings never stored, the wrong column compared, an empty
-index, the question vector never reaching the query. Chunking and reranking cannot rescue it
+an empty table because nothing was ever ingested, the question vector never reaching the query. Chunking and reranking cannot rescue it
 and weeks can be lost trying. A score well clear of guessing means the retrieval path is
 sound and the tuning is worth doing.
 
@@ -131,7 +131,7 @@ direction that cannot happen, the operation is not doing what you think it is �
 example above, where a step that only removed results somehow made ranks worse.
 
 **4. Derive the number a second way, from different data.** Work the same quantity out by a
-route that shares nothing with the first, and see whether the two agree. An index reporting
+route that shares nothing with the first, and see whether the two agree. A stored collection of
 161 chunks looked reasonable — until a single 23 KB file, chopped at 500 characters, works
 out at about 46 chunks by itself, and there were over a hundred files. Two independent routes
 to one quantity; when they disagree, one of them is wrong.

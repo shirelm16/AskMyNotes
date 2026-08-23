@@ -228,7 +228,7 @@ pointless — when it had actually fixed a real bug and exposed a second, unrela
 
 **Adding content can push good results out.** One question got worse without anything about it
 changing — the chunk holding its answer was byte-for-byte identical. What changed was everything
-around it: newly indexed chunks scored higher and pushed it out of the top 5. More content does
+around it: newly stored chunks scored higher and pushed it out of the top 5. More content does
 not simply mean better search.
 
 **A falling score can mean the measurement got more honest.** Two separate runs scored lower
