@@ -279,11 +279,9 @@ is exactly what the metadata header case above needed.
    The fix is an index that stops looking at everything, and pgvector offers two. **IVFFlat**
    groups the vectors into buckets when the index is built, then compares the question to the
    bucket centres and only searches inside the nearest few — like searching three sections of a
-   library instead of all of it. **HNSW** builds a graph linking each vector to its
-   near neighbours, arranged in layers: the top layer holds few vectors with long jumps between
-   them, and each layer below holds more of them with shorter steps. A query starts at the top,
-   moves to whichever neighbour is nearer to the question, then drops a layer and repeats —
-   long jumps first, small adjustments last.
+   library instead of all of it. **HNSW** instead links every vector to the ones most
+   like it, and a query follows those links from one vector to a closer one until it stops
+   getting closer — like being passed from book to book by "if you liked this, try this".
 
    Both are *approximate*: they can miss a chunk that scanning everything would have found, and
    that possibility is exactly what buys the speed. The 15-of-15 above was measured against an
