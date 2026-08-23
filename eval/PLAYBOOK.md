@@ -23,16 +23,26 @@ Only #3 changes between tasks. Everything else is boilerplate written once.
 
 Most of that column is "no". Reach for an LLM judge last, not first.
 
-## Two different reasons to measure a rate instead of asserting
+## Why an eval measures a rate instead of asserting
 
-- **Correctness is fuzzy** — several answers are legitimately right, so pass/fail
-  does not apply. (Retrieval: multiple documents can be relevant.)
-- **The system is genuinely random** — same input, different output run to run.
-  (Generation with temperature > 0.)
+A unit test asserts: this input must give exactly this output, every time, or the build
+fails. That works when there is one correct answer and the code is predictable.
 
-These are not the same thing. Retrieval is fully deterministic — same question and
-same index gives the same chunks every time. It still needs a rate, because of the
-first reason.
+Two separate things break it, and they are worth keeping apart:
+
+- **There is more than one right answer.** Several documents can genuinely answer the
+  same question, so "the output must equal this" is the wrong shape to begin with. You
+  label a list of acceptable answers and count how often one of them turns up.
+- **The system is random.** Above temperature 0, the same input gives different output
+  from one run to the next, so a single result proves nothing either way.
+
+Retrieval here has only the first problem. It is entirely predictable — the same question
+against the same index returns the same chunks every time. It still needs a rate, because
+"correct" is a list rather than a single value, and because the useful question is not
+"is it right" but "how often is it right, and is that number moving".
+
+Generation has both problems at once, which is why measuring answer quality is a harder
+job than measuring retrieval.
 
 ## Order of work
 
