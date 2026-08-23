@@ -166,6 +166,21 @@ produced by the very code that was losing the text.
 
 ## Know what the metric does not cover
 
-This eval checks the right **file** came back — not the right **chunk**. A file can score
-a hit on a paragraph unrelated to the question. It also never looks at the generated
-answer, so it says nothing about whether the output is any good.
+Every measurement is a stand-in. It scores something narrower than what you actually care
+about, because the narrow thing can be checked automatically and the real thing usually
+needs a human. That gap between the two is where false confidence lives, so write it down
+and keep it next to the number.
+
+For this eval the gap has two parts:
+
+- **It checks that the right file came back, not the right passage.** A file is credited
+  even when the passage that dragged it into the results has nothing to do with the
+  question. Scoring passages instead would mean labelling every acceptable passage by hand,
+  which is far more work than labelling files — a deliberate trade, but a trade.
+- **It never looks at the generated answer.** Retrieval can be perfect while the answer is
+  wrong, incomplete, or ignores the retrieved text altogether. A full score says the right
+  material was put in front of the model. It says nothing about what the model did with it.
+
+The habit worth keeping is stating those limits wherever the number is quoted. A measurement
+with its blind spots written beside it is a tool. The same measurement quoted on its own
+becomes a claim about the whole system, and it was never measuring the whole system.
