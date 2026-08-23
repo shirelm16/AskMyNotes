@@ -244,17 +244,24 @@ not be compared. Recorded as such, rather than being credited to the change unde
 score — and that is the smallest step the measurement can take. There is no finer reading than
 "one more question got it right".
 
-Underneath that, the ranking is less solid than it looks. The reranker returns a whole number
-from 0 to 10, so across a hundred passages there are ties everywhere — many passages end up
-sharing a score. Those ties are settled by vector distance, where the gaps run to the third or
-fourth decimal place. So whether a passage finishes 5th or 6th is sometimes decided by a
+The reranker returns a whole number from 0 to 10, so across a hundred passages there are ties everywhere — 
+many passages end up sharing a score. Those ties are settled by vector distance, where the gaps run to the 
+third or fourth decimal place. So whether a passage finishes 5th or 6th is sometimes decided by a
 difference far too small to mean anything. Only 5th counts.
 
 That is why one question moving is a lead rather than a result. It might be a real improvement,
 or it might be two passages that were nearly identical simply landing in the other order — and
-15 questions cannot tell the two apart. Either widen the set, or do what the metadata header
-case above required: find the mechanism, and judge the change on that rather than on the
-number.
+15 questions cannot tell the two apart.
+
+More questions would not fix that case. Every question still sits on the same edge. What more
+questions change is what the *total* can tell you: an accidental flip is as likely to fall one
+way as the other, so across a large set they largely cancel out, while a change that genuinely
+helps pushes many questions in the same direction. At 15 there is nothing to average, so one
+real improvement and one accident look the same. At 150 a real effect shows up as a pattern and
+an accident stays a single stray.
+
+For one particular question, though, no size of set settles it. Only the mechanism does — which
+is exactly what the metadata header case above needed.
 
 ---
 
