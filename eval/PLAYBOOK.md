@@ -145,13 +145,19 @@ Even if most are far smaller, the total ought to be in the thousands.
 becoming chunks at all. The reported count could never have revealed that, because it was
 produced by the very code that was losing the text.
 
-Checklist for the harness itself:
-- [ ] Verify 2 items by hand against raw output after every harness change
-- [ ] Off-by-one: `@5` means ranks 1–5. Check the boundary explicitly.
-- [ ] Integer division in any `1 / n`
-- [ ] Any accumulator declared outside the loop it belongs to
-- [ ] Path/ID comparison: normalize both sides, check direction (`a.EndsWith(b)` is not `b.EndsWith(a)`)
-- [ ] "Not found" encoded as something unmistakable — not `0`, which reads as a position
+Checklist for the scoring code itself — the bugs that hide behind a plausible number:
+
+- [ ] **Check two results by hand** against the raw output, after every change to the harness.
+- [ ] **Boundaries.** If a measure says "the top 5", confirm whether the 5th is inside or
+      outside. An off-by-one in a cutoff changes every score without ever looking wrong.
+- [ ] **Division.** Where whole numbers divide into whole numbers, anything below 1 becomes 0.
+      Check every division that is supposed to produce a fraction.
+- [ ] **Totals in the wrong scope.** A counter that should reset for each item, or should not,
+      and does the opposite.
+- [ ] **Comparing identifiers.** Normalise both sides — case, separators, absolute against
+      relative — and check the direction: "a ends with b" is not "b ends with a".
+- [ ] **"Not found" must be unmistakable.** Zero is already a position, so it cannot also mean
+      absent. Where it does, missing results quietly average in as if they were results.
 
 ## Reading the results
 
