@@ -272,10 +272,21 @@ is exactly what the metadata header case above needed.
 
 ## 4. Known limitations, and future improvements
 
-1. **No vector index.** `ORDER BY embedding <=> $1 LIMIT 100` scans every row. Fine at this
-   size, useless at scale — it needs one of pgvector's approximate-search indexes (HNSW or
-   IVFFlat), which trade exact results for speed, so the effect would have to be re-measured
-   against the test set rather than assumed to be free.
+1. **No vector index.** `ORDER BY embedding <=> $1 LIMIT 100` measures the distance to every
+   row in the table and sorts. That is exact, and it costs the whole table on every question —
+   fine at 482ms today, unusable at millions of chunks.
+
+   The fix is an index that stops looking at everything, and pgvector offers two. **IVFFlat**
+   groups the vectors into buckets when the index is built, then compares the question to the
+   bucket centres and only searches inside the nearest few — like searching three sections of a
+   library instead of all of it. **HNSW** builds a graph linking each vector to its near
+   neighbours across several layers, and a query hops through it getting closer each step,
+   coarse layers first.
+
+   Both are *approximate*: they can miss a chunk that scanning everything would have found, and
+   that possibility is exactly what buys the speed. The 15-of-15 above was measured against an
+   exact scan, so switching an index on is a change to be re-measured against the test set, not
+   a free speed-up.
 2. **Ingest is full-rebuild only.** Every run truncates and re-embeds everything. No change
    detection, no incremental update, and re-embedding unchanged files costs money.
 3. **The golden set measures retrieval, not answers.** hit@5 says the right file was found. It
