@@ -241,7 +241,18 @@ been edited between measurements, so the two numbers described different collect
 not be compared. Recorded as such, rather than being credited to the change under test.
 
 **Know how precise your own measurement is.** With 15 questions, one question is 6.7% of the
-score, so a change that moves a single question is noise rather than evidence.
+score — and that is the smallest step the measurement can take. There is no finer reading than
+"one more question got it right".
+
+That matters because of what sits underneath a rank. Retrieval produces a continuous score and
+the top-5 cutoff is a hard line drawn across it, so two chunks separated by almost nothing can
+land on opposite sides of that line. A change that moves one question might be a genuine
+improvement, or it might be a single near-tie falling the other way. Fifteen questions cannot
+tell those apart — and fifteen questions are a small sample of everything someone might ask.
+
+So a single-question move is a lead, not a result. Either widen the set, or do what the metadata
+header case above required: find the mechanism, and judge the change on that rather than on the
+number.
 
 ---
 
