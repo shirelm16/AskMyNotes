@@ -102,15 +102,28 @@ nearly always a bug.** Real numbers land somewhere between. This one came back a
 0.60, which was only reachable if every question below rank 1 had contributed nothing at all
 — and that is what a `1 / rank` integer division does.
 
-**2. Work out what guessing would score.** A number means nothing on its own until you know
-what *no skill* looks like. Say each question has one correct file among 130, and the system
-returns 5 files: picking at random would hit the right one about 5/130, roughly 4% of the
-time. That 4% is what a system doing nothing scores.
+**2. Work out what guessing would score.** A score means nothing on its own until you know
+what a system with *no skill* would get. That number is arithmetic, not an experiment — you
+work it out once, on paper, before running anything.
 
-Knowing it tells you which kind of problem you have. A first result near the guessing rate
-is not a badly tuned system — it is a broken one, and the bug will be something structural
-like the comparison never happening or the wrong field being searched. A first result far
-above guessing is a tuning problem. Without the baseline both are just numbers on a screen.
+Say each question has one correct file among 130, and the system returns 5 files. Picking 5
+at random finds the right one about `5/130`, roughly 4% of the time. That is the score of a
+system doing nothing whatsoever.
+
+Then run the eval once, and hold your result up against it:
+
+| Your first result | What it means |
+|---|---|
+| ~4% | The system is not working. Not badly tuned — **not working.** |
+| far above 4% | The system works. What is left is a tuning problem. |
+
+The distinction matters because those two need completely different work. A score close to
+guessing is a structural bug: embeddings never stored, the wrong column compared, an empty
+index, the question vector never reaching the query. Chunking and reranking cannot rescue it
+and weeks can be lost trying. A score well clear of guessing means the retrieval path is
+sound and the tuning is worth doing.
+
+Without the baseline, "7%" looks like a tuning problem. With it, "7%" is a bug report.
 
 **3. Ask which directions are impossible.** Some changes can only move a number one way, and
 deciding which before you run turns a surprise into a proof. When something moves in a
