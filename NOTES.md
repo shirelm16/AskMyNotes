@@ -90,8 +90,8 @@ Both stages are needed, for opposite reasons:
   passages that discuss the subject without containing the answer, and it cannot tell the
   difference.
 
-So the database throws away almost everything, cheaply and slightly bluntly. The reranker then
-orders what survived, carefully and expensively. Neither could do the other's job.
+So the database discards almost everything, cheaply and imprecisely. The reranker then orders
+what is left, carefully and expensively. Neither could do the other's job.
 
 ### Per-source capping
 
@@ -100,8 +100,8 @@ var cap = 3;   // at most 3 chunks from any one file
 ```
 
 Over-fetch 100, then keep at most three chunks per source file. Without this, one long,
-verbose file can occupy most of the top results and crowd out the file that actually holds the
-answer. It costs nothing and protects against a single document dominating.
+verbose file can occupy most of the top results and leave no room for the file that actually
+holds the answer. It costs nothing and protects against a single document dominating.
 
 ### The reranker prompt does one specific job
 
@@ -206,7 +206,7 @@ each question the harness runs the real retrieval path, finds the rank of the fi
 source, and reports:
 
 - **hit-rate@5** — of the 15 questions, how many had a correct source somewhere in their top 5
-  results. A blunt pass/fail per question.
+  results. Pass or fail per question, with nothing in between.
 - **mean reciprocal rank** — how *near the top* the correct source landed, averaged across the
   questions. Rank 1 scores 1, rank 2 scores 0.5, rank 4 scores 0.25. It separates "found it
   first" from "found it fourth", which hit-rate@5 treats identically.
@@ -251,9 +251,10 @@ fourth decimal place. So whether a passage finishes 5th or 6th is sometimes deci
 difference far too small to mean anything. Only 5th counts.
 
 That is why one question moving is a lead rather than a result. It might be a real improvement,
-or it might be one of those hair's-breadth orderings falling the other way — and 15 questions
-cannot tell the two apart. Either widen the set, or do what the metadata header case above
-required: find the mechanism, and judge the change on that rather than on the number.
+or it might be two passages that were nearly identical simply landing in the other order — and
+15 questions cannot tell the two apart. Either widen the set, or do what the metadata header
+case above required: find the mechanism, and judge the change on that rather than on the
+number.
 
 ---
 
