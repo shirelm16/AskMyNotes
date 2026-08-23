@@ -254,11 +254,16 @@ or it might be two passages that were nearly identical simply landing in the oth
 15 questions cannot tell the two apart.
 
 More questions would not fix that case. Every question still sits on the same edge. What more
-questions change is what the *total* can tell you: an accidental flip is as likely to fall one
-way as the other, so across a large set they largely cancel out, while a change that genuinely
-helps pushes many questions in the same direction. At 15 there is nothing to average, so one
-real improvement and one accident look the same. At 150 a real effect shows up as a pattern and
-an accident stays a single stray.
+questions change is what the *total* can tell you, and the difference is **direction, not
+count**.
+
+A reshuffle of near-ties has no reason to favour the correct answer, so accidental flips go both
+ways — some questions get better, some get worse. A genuine improvement mostly pushes one way.
+Over 150 questions those look nothing alike: a change that really helps might improve 12 and
+worsen 2, while an accident improves 7 and worsens 6 and nets out at roughly zero.
+
+Over 15 questions both of those shrink to "one or two moved", which is exactly why they cannot
+be told apart.
 
 For one particular question, though, no size of set settles it. Only the mechanism does — which
 is exactly what the metadata header case above needed.
