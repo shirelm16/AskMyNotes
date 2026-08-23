@@ -145,33 +145,23 @@ Even if most are far smaller, the total ought to be in the thousands.
 becoming chunks at all. The reported count could never have revealed that, because it was
 produced by the very code that was losing the text.
 
-Checklist for the scoring code itself — the bugs that hide behind a plausible number:
-
-- [ ] **Check two results by hand** against the raw output, after every change to the harness.
-- [ ] **Boundaries.** If a measure says "the top 5", confirm whether the 5th is inside or
-      outside. An off-by-one in a cutoff changes every score without ever looking wrong.
-- [ ] **Division.** Where whole numbers divide into whole numbers, anything below 1 becomes 0.
-      Check every division that is supposed to produce a fraction.
-- [ ] **Totals in the wrong scope.** A counter that should reset for each item, or should not,
-      and does the opposite.
-- [ ] **Comparing identifiers.** Normalise both sides — case, separators, absolute against
-      relative — and check the direction: "a ends with b" is not "b ends with a".
-- [ ] **"Not found" must be unmistakable.** Zero is already a position, so it cannot also mean
-      absent. Where it does, missing results quietly average in as if they were results.
-
 ## Reading the results
 
-- **A score going down can mean the eval got more honest.** It went 12 → 11 here while
-  two genuine defects were being fixed.
-- **Items sitting near the cutoff flip on any change.** Every question that flipped was
-  at rank 3. That is shuffling, not quality. Rank-1 results never moved.
-- **Keep correct fixes regardless of the score.** Reverting a real fix because a coarse
-  measurement wobbled is how you get a broken system that scores well.
-- **If the ruler cannot resolve the changes being made, fix the ruler first.**
-  Yes/no metrics (hit-rate) are blunt; rank-based ones (MRR) move gradually.
-- **Ask whether the change improved the system or just the metric.** Deduplicating by
-  source raises "how many different files are in the top 5" — which is exactly what a
-  file-level metric counts. The number rises before any question of better matching.
+- **A score going down does not mean the change was bad.** Fixing a real defect can lower
+  the number, because the measurement was flattering you before. Work out *why* it moved
+  before deciding what to do about it.
+- **Keep a correct fix even when the score dislikes it.** Reverting real fixes because a
+  rough measurement wobbled is how a system ends up broken and scoring well.
+- **Look at which items moved, not only how many.** Results sitting near the cutoff flip on
+  almost any change. If everything that moved was already borderline, that is reshuffling,
+  not improvement — and if the strongest results never move, the change did not reach them.
+- **If the measure cannot see the changes you are making, fix the measure first.** A yes/no
+  measure only moves when an item crosses a line, so small real gains are invisible to it.
+  A rank-based one moves a little whenever anything improves.
+- **Ask whether the change improved the system or only the metric.** Any change that
+  reshapes the output into the shape the metric counts will raise the number without
+  anything actually getting better. Forcing variety into the results lifts a measure that
+  rewards variety, and proves nothing about whether the answers got better.
 
 ## Know what the metric does not cover
 
