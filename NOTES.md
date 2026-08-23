@@ -304,8 +304,11 @@ is exactly what the metadata header case above needed.
 7. **Reranking still costs an LLM call per batch** and is 48% of latency even after batching.
    A purpose-built reranking model is cheaper per passage and worth measuring
    against, rather than assuming a general-purpose LLM is the right tool for scoring.
-8. **The latency numbers have no noise floor yet.** They're single calls, and `generate` was
-   measured at both 2,434ms and 6,715ms — it tracks answer length, not a fixed cost. One early
-   sample summed to 12.9s against a warm total of 7.9s, so cold start is real. Proper method:
-   run `/ask` 5–10 times, discard the first, report the median — the same discipline already
-   applied to the eval set.
+8. **The latency numbers are single samples, not measurements.** Each is one call. `generate`
+   came out at 2,434ms once and 6,715ms another time — it tracks how long the answer happens to
+   be, not a fixed cost. One early sample summed to 12.9s against a warm total of 7.9s, so the
+   first call after a start is much slower and that difference is real.
+
+   A figure worth publishing would be the median of five to ten runs with the first discarded.
+   These are not that. The 8.2s above is honest as "roughly this on my machine" and should not
+   be read as anything more precise.
