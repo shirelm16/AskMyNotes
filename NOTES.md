@@ -36,7 +36,7 @@ rather than from intuition.
                        |                              LLM reranker, 0-10
              embed in batches of 100                          |
                        |                            top chunks -> context
-        TRUNCATE + binary COPY (one txn)                      |
+   replace all rows in one transaction                        |
                        |                              gpt-4o-mini answers,
                   chunks table                        citing source files
 ```
@@ -116,12 +116,25 @@ Supporting choices:
   gives two passages the same score, fall back to the embedding signal rather than to arbitrary
   order.
 
-### Ingest is atomic and bulk
+### Ingest replaces everything, atomically
 
-`TRUNCATE` and a binary `COPY` inside a single transaction. Binary COPY is dramatically faster
-than row-by-row inserts, and wrapping both in a transaction means the index is never left half
-rebuilt — either the new set is fully there or the old one is untouched. Embeddings are
-generated in batches of 100 to cut API round-trips.
+`TRUNCATE` then `COPY`, both inside one transaction.
+
+**Why a transaction.** `TRUNCATE` empties the table, so between it and the reload there is a
+moment with no searchable notes at all. If the load failed halfway — a dropped connection, one
+bad row — that is where it would stay. Wrapping both means nothing is visible until the commit:
+other connections keep reading the old rows throughout, and a failure anywhere leaves the old
+set untouched. Either the new set is fully there or the old one still is; never neither.
+
+**Why `COPY` rather than `INSERT`.** An insert per row is a network round-trip and a statement
+parse per row. `COPY` streams every row through one operation instead.
+
+**Why binary rather than text.** Each embedding is 1536 floats. Written as text, one float is
+about 12 characters, so a single row's vector is roughly 18 KB that Postgres then has to parse
+back into 1536 numbers. In binary it is 4 bytes per float — about 6 KB — and no parsing at
+either end. Text is a wasteful way to move numbers.
+
+Embeddings themselves are generated 100 at a time, for the same reason: fewer round-trips.
 
 ### Latency: 30.6s → 8.2s, measured
 
