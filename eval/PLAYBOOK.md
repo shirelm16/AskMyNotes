@@ -1,6 +1,5 @@
 # How to evaluate an AI feature — the procedure
-
-Written 2026-07-29, after building the retrieval eval. This is the transferable part:
+This is the transferable part:
 the steps, not the specifics of this project.
 
 ## Every eval has the same four parts
@@ -112,16 +111,16 @@ system doing nothing whatsoever.
 
 Then run the eval once, and hold your result up against it:
 
-| Your first result | What it means |
+| result | What it means |
 |---|---|
 | ~4% | The system is not working. Not badly tuned — **not working.** |
 | far above 4% | The system works. What is left is a tuning problem. |
 
 The distinction matters because those two need completely different work. A score close to
-guessing is a structural bug: embeddings never stored, the wrong column compared, an empty
-an empty table because nothing was ever ingested, the question vector never reaching the query. Chunking and reranking cannot rescue it
-and weeks can be lost trying. A score well clear of guessing means the retrieval path is
-sound and the tuning is worth doing.
+guessing is a structural bug: embeddings never stored, the wrong column compared, 
+an empty table because nothing was ever ingested, the question vector never reaching the query. 
+Chunking and reranking cannot rescue it and weeks can be lost trying. 
+A score well clear of guessing means the retrieval path is sound and the tuning is worth doing.
 
 Without the baseline, "7%" looks like a tuning problem. With it, "7%" is a bug report.
 
@@ -131,10 +130,20 @@ direction that cannot happen, the operation is not doing what you think it is �
 example above, where a step that only removed results somehow made ranks worse.
 
 **4. Derive the number a second way, from different data.** Work the same quantity out by a
-route that shares nothing with the first, and see whether the two agree. A stored collection of
-161 chunks looked reasonable — until a single 23 KB file, chopped at 500 characters, works
-out at about 46 chunks by itself, and there were over a hundred files. Two independent routes
-to one quantity; when they disagree, one of them is wrong.
+route that shares nothing with the first, then see whether the two agree.
+
+The ingest reported that it had stored **161 chunks**. On its own that number looks fine.
+There is nothing about "161" that announces itself as wrong, which is exactly the problem
+with reading a number the system hands you.
+
+So work it out from the other end, using facts the ingest had no part in. One report in the
+folder is 23 KB. Chunks run to a few hundred characters, so call it 500 — that single file
+should produce something like **46 chunks on its own**. And there were over a hundred files.
+Even if most are far smaller, the total ought to be in the thousands.
+
+161 against thousands is not a rounding difference. It meant most of the text was never
+becoming chunks at all. The reported count could never have revealed that, because it was
+produced by the very code that was losing the text.
 
 Checklist for the harness itself:
 - [ ] Verify 2 items by hand against raw output after every harness change
