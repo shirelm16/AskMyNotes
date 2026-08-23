@@ -158,17 +158,22 @@ returned score count doesn't match) brought it to **8.2 seconds**. Retrieval qua
 15 of 15 questions, with the correct source usually first — the speed-up cost nothing in
 accuracy, which is only knowable because the test set was there to check it against.
 
-Warm breakdown:
+A breakdown, measured after the first request — the first one is slower, because the connection
+pool, the JIT and the TLS session all start cold (limitation 8):
 
 ```
 embed 1360 | query 482 | rerank 3892 | generate 2434 | TOTAL 8168 ms
    17%          6%          48%           30%
 ```
 
-**And the useful conclusion: the floor is about 3.8 seconds.** Two OpenAI round trips — embed
-the question, generate the answer — are unavoidable in this architecture. Optimising below ~4s
-isn't a tuning problem, it's an architecture change. Knowing where your floor is, and being
-able to say why, is a better answer than a faster number.
+**The useful conclusion: the floor is about 3.8 seconds.** Two OpenAI round trips — embedding
+the question, generating the answer — are unavoidable in this design, and together they are
+`1360 + 2434 ms`. No amount of tuning the parts in between gets under that.
+
+Going lower means changing the design rather than the settings: embed locally instead of calling
+out, cache answers for repeated questions, or stream the answer so the reader sees the first
+words while the rest is still being generated — which changes perceived latency without changing
+the total at all.
 
 ### A change that lowered the score and was kept anyway
 
