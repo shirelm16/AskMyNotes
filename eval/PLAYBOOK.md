@@ -71,9 +71,17 @@ it.** Two things that catches:
 - **A number that is too exact.** Mean reciprocal rank came back as precisely 0.6, and 9
   of the 15 questions were at rank 1 — and 9/15 is 0.6. That can only be true if every
   question below rank 1 contributed nothing, which meant `1 / rank` was integer division.
-- **A change in an impossible direction.** Scores got worse after a step that only
-  *removed* entries. Removing items from a sorted list can promote what is left behind; it
-  cannot demote it. So the step was not filtering, it was reordering.
+- **A change in an impossible direction.** A step was added that only *removes* results —
+  it dropped the extra chunks that came from the same file, keeping at most three of each.
+
+  Removing things can only help whatever survives. If the correct answer sat 7th and two
+  results above it were dropped, it becomes 5th. There is no way for it to end up further
+  down the list.
+
+  The measured ranks got worse anyway. Since dropping alone cannot do that, the step had
+  to be doing something else as well — and it was: it grouped the results by file and then
+  flattened them back into a list, so the output came out ordered file by file instead of
+  by relevance. The filtering was correct. The order it returned them in was not.
 
 ### How to know roughly what a number should be, before looking
 
