@@ -56,16 +56,27 @@ any other AI feature.
 ## Running it
 
 ```bash
-docker run -d --name pgvector -e POSTGRES_PASSWORD=... -p 5432:5432 pgvector/pgvector:pg16
+# 1. a Postgres with pgvector, and the schema this expects to find
+docker run -d --name pgvec -e POSTGRES_PASSWORD=dev -p 5432:5432 pgvector/pgvector:pg16
+docker exec -i pgvec psql -U postgres -c "CREATE DATABASE asknotes;"
+docker exec -i pgvec psql -U postgres -d asknotes < db/schema.sql
+
+# 2. your OpenAI key, kept out of the repo
 dotnet user-secrets set "OpenAI:ApiKey" "sk-..."
 
-cp appsettings.Local.example.json appsettings.Local.json   # then edit Notes:Roots
+# 3. your machine's settings: which folders to index, and the connection string
+cp appsettings.Local.example.json appsettings.Local.json
+
 dotnet run
 ```
 
-`Notes:Roots` is the list of folders to index — it has no default, because the folders are
-wherever your notes happen to live. Then call `/ingest` and ask it something —
-[`AskMyNotes.http`](AskMyNotes.http) has the requests ready to send.
+Then `GET /ingest` to read and store the notes, and `POST /ask` to ask something —
+[`AskMyNotes.http`](AskMyNotes.http) has the requests ready to send, and `GET /dbcheck` says
+how many chunks are stored if you want to confirm the ingest worked.
+
+Two things have no defaults and cannot: **`Notes:Roots`**, because your notes are wherever
+they are, and the **OpenAI key**. Both endpoints say so plainly rather than failing oddly if
+either is missing.
 
 ## Design notes
 

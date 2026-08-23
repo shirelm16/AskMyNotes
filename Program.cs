@@ -11,9 +11,8 @@ using Pgvector;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Machine-specific settings — the folders to index, and a real connection string. Kept out of
-// appsettings.json because that file is committed, and out of appsettings.Development.json
-// because that one is committed too. Optional: without it the endpoints say what is missing.
+// Machine-specific settings — the folders to index, and a real connection string.
+// Optional: without it the endpoints say what is missing.
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
 var connString = builder.Configuration.GetConnectionString("Postgres");
