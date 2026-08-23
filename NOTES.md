@@ -73,14 +73,25 @@ Later tuning took it to 15 of 15, with the correct source usually landing first.
 
 ### Two-stage retrieval: cheap recall, then expensive precision
 
-Vector search runs first with `LIMIT 100`. It's fast and approximate, and its job is *recall* —
-get the right chunk somewhere in the candidate pool. The reranker runs second, and its job is
-*precision* — decide which of those hundred actually answer the question.
+Vector search runs first, `LIMIT 100`. Its job is *recall*: out of every chunk in the table, get
+the right one somewhere into a pool of a hundred. It is the cheap stage — 482ms in the measured
+breakdown, and that is without an index today (limitation 1).
 
-This is the standard shape of production retrieval, and the reason is cost. Scoring 100 passages
-with an LLM per query would be slow and expensive if the database couldn't narrow it down first;
-relying on the database alone gives you chunks that are *topically similar* rather than chunks
-that *answer the question*.
+The reranker runs second, over those candidates — up to 100 of them, fewer once the per-source
+cap below has dropped some. Its job is *precision*: decide which of the survivors actually
+answer the question. It scores them in batches of 18, four batches in flight at once.
+
+Both stages are needed, for opposite reasons:
+
+- **The reranker alone doesn't scale.** It reads each passage with an LLM, so its cost grows
+  with the number of passages. Scoring a hundred already takes ~3.9 seconds — 48% of a request.
+  Scoring the whole collection per question is not an option, and gets worse as notes are added.
+- **The vector search alone isn't precise enough.** Similarity is *topical*. It happily returns
+  passages that discuss the subject without containing the answer, and it cannot tell the
+  difference.
+
+So the database throws away almost everything, cheaply and slightly bluntly. The reranker then
+orders what survived, carefully and expensively. Neither could do the other's job.
 
 ### Per-source capping
 
