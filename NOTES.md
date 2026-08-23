@@ -244,15 +244,16 @@ not be compared. Recorded as such, rather than being credited to the change unde
 score — and that is the smallest step the measurement can take. There is no finer reading than
 "one more question got it right".
 
-That matters because of what sits underneath a rank. Retrieval produces a continuous score and
-the top-5 cutoff is a hard line drawn across it, so two chunks separated by almost nothing can
-land on opposite sides of that line. A change that moves one question might be a genuine
-improvement, or it might be a single near-tie falling the other way. Fifteen questions cannot
-tell those apart — and fifteen questions are a small sample of everything someone might ask.
+Underneath that, the ranking is less solid than it looks. The reranker returns a whole number
+from 0 to 10, so across a hundred passages there are ties everywhere — many passages end up
+sharing a score. Those ties are settled by vector distance, where the gaps run to the third or
+fourth decimal place. So whether a passage finishes 5th or 6th is sometimes decided by a
+difference far too small to mean anything. Only 5th counts.
 
-So a single-question move is a lead, not a result. Either widen the set, or do what the metadata
-header case above required: find the mechanism, and judge the change on that rather than on the
-number.
+That is why one question moving is a lead rather than a result. It might be a real improvement,
+or it might be one of those hair's-breadth orderings falling the other way — and 15 questions
+cannot tell the two apart. Either widen the set, or do what the metadata header case above
+required: find the mechanism, and judge the change on that rather than on the number.
 
 ---
 
