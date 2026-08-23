@@ -58,17 +58,22 @@ job than measuring retrieval.
 
 ## Trust the eval last, not first
 
-Five bugs in the scoring code this session. Zero in the retrieval code. Measurement code
-gets less scrutiny because there is nothing to compare it against.
+Measurement code gets less scrutiny than the code being measured, because there is nothing
+to compare it against. When retrieval is wrong you can read the results and see it. When
+the scorer is wrong it prints a number, and a number looks like a number.
 
-**Before looking at a number, work out roughly what it should be. Then be suspicious.**
+Building this one, every bug that turned up was in the scoring code. None were in
+retrieval — which is the opposite of where the attention naturally goes.
 
-Both bugs caught from the number alone:
-- MRR came back exactly `0.6`. There were 9 rank-1 questions out of 15. `9/15 = 0.6`
-  → every non-rank-1 question scored zero → `1 / rank` was integer division.
-- Ranks got *worse* after dedupe. Removing entries from a sorted list can only promote
-  what remains — worse ranks are impossible → it was not filtering, it was reordering.
-  (`SelectMany` over a Dictionary walks file by file and destroys the distance order.)
+**Work out roughly what the number should be before you look at it. Then be suspicious of
+it.** Two things that catches:
+
+- **A number that is too exact.** Mean reciprocal rank came back as precisely 0.6, and 9
+  of the 15 questions were at rank 1 — and 9/15 is 0.6. That can only be true if every
+  question below rank 1 contributed nothing, which meant `1 / rank` was integer division.
+- **A change in an impossible direction.** Scores got worse after a step that only
+  *removed* entries. Removing items from a sorted list can promote what is left behind; it
+  cannot demote it. So the step was not filtering, it was reordering.
 
 ### How to know roughly what a number should be, before looking
 
