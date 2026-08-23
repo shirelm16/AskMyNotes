@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Routing.Matching;
-using Npgsql;
+﻿using Npgsql;
 using NpgsqlTypes;
 using OpenAI.Chat;
 using OpenAI.Embeddings;
@@ -141,9 +139,10 @@ app.MapGet("/eval", async () =>
             
             Vector questionVector = await EmbedQuestion(question.Question, embeddingClient);
             var topChunksByDistance = await GetTopChunksWithDedup(conn, questionVector);
-            var sw = Stopwatch.StartNew();
+            // No timing here on purpose: this runs 4 questions at once, each of which reranks in
+            // 4 concurrent batches, so anything measured inside it is a contended number and not
+            // comparable to the per-request breakdown /ask reports.
             var topChunks = (await Reranker.RerankAsync(chatClient, question.Question, topChunksByDistance)).Take(10);
-            Console.WriteLine($"Q{question.Id}: reranking took: {sw.ElapsedMilliseconds}");
             var actualSources = topChunks.Select(c => c.Source.Replace('\\', '/')).ToList();
             var hitRank = actualSources.FindIndex(a => question.ExpectedSources.Any(e => a.EndsWith(e))) + 1;
             return (question.Id, hitRank);

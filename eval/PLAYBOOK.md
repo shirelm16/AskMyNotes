@@ -186,7 +186,3 @@ So say what the number measured whenever you say the number.
 "It scores 15 out of 15" invites the listener to hear *it answers 15 questions correctly*,
 which is not what was tested at all. "For all 15 questions, the correct file was in the top
 5 results" says exactly what was checked, and leaves everything else visibly open.
-
-The longer sentence is the more useful one, too, because it invites the right next question
-— *and how good were the answers?* — instead of quietly implying it has already been
-answered.
