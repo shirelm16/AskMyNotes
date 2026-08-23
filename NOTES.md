@@ -185,10 +185,17 @@ characters in one file, which was just enough for all four of its numbered items
 single chunk instead of getting one each. The item that answered the question lost its own
 dedicated chunk and fell from 1st place to 19th.
 
-Finding that meant querying the database directly, seeing the chunk sitting at rank 19, and
-asking why the others now outranked it — when the better question was whether *this* one had
-fallen. "The number went down but the change was good" is exactly how bad changes survive, so it
-only counts when the mechanism can be named.
+Finding it meant querying the database directly and seeing that chunk sitting at rank 19. The
+instinct at that point is to ask what the chunks above it have that it doesn't — to treat the
+ones that beat it as the thing that changed. They hadn't changed at all.
+
+**A result can lose its place two ways, and they look identical in the ranking: its rivals got
+better, or it got worse.** Here it was the second. The chunk had stopped being about one thing
+and become a chunk about four, only one of which the question was asking about — and that
+dilution is what dropped it. Looking upward at the winners would never have shown that.
+
+"The number went down but the change was good" is exactly how bad changes survive, so it only
+counts when the mechanism can be named.
 
 ---
 
@@ -211,7 +218,7 @@ runs that made things worse and the ones that changed nothing.
 
 The questions and the run log are not in this repository. The set was labelled against my own
 notes, so the questions quote personal content; [`eval/PLAYBOOK.md`](eval/PLAYBOOK.md) is the
-procedure, which is the part that transfers anyway. What follows is what the log taught.
+procedure, which is the part that transfers anyway.
 
 ### What the log actually taught
 
@@ -227,21 +234,14 @@ not simply mean better search.
 
 **A falling score can mean the measurement got more honest.** Two separate runs scored lower
 while fixing genuine bugs. Chasing down why is what surfaced the metadata problem — the header
-block at the top of each note, including a random session id, was being stored and searched as
-if it were part of the note's content.
+block at the top of each note was being stored and searched as if it were part of the note's content.
 
 **Only change one thing at a time — including the data.** In one run the notes themselves had
 been edited between measurements, so the two numbers described different collections and could
 not be compared. Recorded as such, rather than being credited to the change under test.
 
-**A confident diagnosis was wrong twice.** One question kept failing and I decided the cause was
-a wording mismatch between the question and the note — and that no change to chunking could fix
-it. Structure-aware chunking then put it at **rank 1**. The words had been there the whole time,
-diluted inside a chunk that also covered three other topics.
-
 **Know how precise your own measurement is.** With 15 questions, one question is 6.7% of the
-score, so a change that moves a single question is noise rather than evidence. Written into the
-log at the time, so later runs weren't over-read.
+score, so a change that moves a single question is noise rather than evidence.
 
 ---
 
