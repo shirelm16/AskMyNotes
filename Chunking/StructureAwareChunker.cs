@@ -74,7 +74,7 @@ public sealed class StructureAwareChunker(int minSize = 150, int maxSize = 1000)
 
             foreach (var piece in pieces)
             {
-                if (sb.Length > 0 && sb.Length + 2 + piece.Length > maxSize)
+                if (sb.Length > 0 && sb.Length + 2 + piece.Length > maxSize) // check if appenfing curret piece will exceed max size. 2 -> \n\n
                 {
                     chunks.Add(sb.ToString());
                     sb.Clear();
@@ -98,9 +98,9 @@ public sealed class StructureAwareChunker(int minSize = 150, int maxSize = 1000)
         var parts = new List<string>();
         var sb = new StringBuilder();
 
-        foreach (var sentence in Regex.Split(unit, @"(?<=[.!?])\s+"))
+        foreach (var sentence in Regex.Split(unit, @"(?<=[.!?])\s+")) //sentence is a text ending with .|!|? - splitting by .|!|? and a white space
         {
-            if (sb.Length > 0 && sb.Length + 1 + sentence.Length > maxSize)
+            if (sb.Length > 0 && sb.Length + 1 + sentence.Length > maxSize)// 1 -> ' '
             {
                 parts.Add(sb.ToString());
                 sb.Clear();

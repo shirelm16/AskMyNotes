@@ -8,8 +8,7 @@ namespace AskMyNotes.Retrieval;
 ///
 /// An interface because this stage is the expensive one — 48% of a request — and the obvious
 /// next experiment is replacing a general-purpose language model with a model built for
-/// scoring passages, which is cheaper per passage. That is a swap, not a rewrite, only if
-/// there is a seam here.
+/// scoring passages, which is cheaper per passage.
 /// </summary>
 public interface IReranker
 {

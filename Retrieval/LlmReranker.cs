@@ -13,9 +13,6 @@ namespace AskMyNotes.Retrieval;
 /// happily returns a passage that discusses the subject without containing the answer. The
 /// prompt has to say that a passage about the right subject which does not answer the question
 /// scores low, because that is the whole reason this stage exists.
-///
-/// Passages are scored in batches of 18, four batches at a time. Scoring them one call at a
-/// time was almost the whole of a 30.6-second request; batching brought it to 8.2 seconds.
 /// </summary>
 public sealed class LlmReranker(ChatClient chat) : IReranker
 {

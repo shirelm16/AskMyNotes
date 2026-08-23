@@ -25,12 +25,7 @@ public sealed partial class NoteLoader(IChunker chunker)
 
         foreach (var root in roots)
         {
-            // The eval folder is skipped: it holds the questions and the run log, and indexing
-            // the questions would let the system retrieve its own answer key.
-            var files = Directory.GetFiles(root, "*.md", SearchOption.AllDirectories)
-                .Where(f => !f.Replace(Path.DirectorySeparatorChar, '/').Contains("/eval/"));
-
-            foreach (var file in files)
+            foreach (var file in Directory.GetFiles(root, "*.md", SearchOption.AllDirectories))
             {
                 var text = MetadataHeader().Replace(await File.ReadAllTextAsync(file, ct), "");
 

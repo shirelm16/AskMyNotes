@@ -70,12 +70,12 @@ app.MapGet("/ingest", async (IConfiguration config, NoteLoader loader, ChunkStor
 
 // Answers a question from the stored notes, citing the files it used.
 app.MapPost("/ask", async (AskRequest req, ChunkStore store, IReranker reranker,
-                           EmbeddingClient embeddings, ChatClient chat) =>
+                           EmbeddingClient embeddingsClient, ChatClient chatClient) =>
 {
     // One stopwatch with snapshots taken along the way, so the parts sum exactly to the total.
     var sw = Stopwatch.StartNew();
 
-    var questionVector = new Vector((await embeddings.GenerateEmbeddingAsync(req.Question)).Value.ToFloats());
+    var questionVector = new Vector((await embeddingsClient.GenerateEmbeddingAsync(req.Question)).Value.ToFloats());
     var tEmbed = sw.ElapsedMilliseconds;
 
     var candidates = await store.SearchAsync(questionVector);
@@ -93,7 +93,7 @@ app.MapPost("/ask", async (AskRequest req, ChunkStore store, IReranker reranker,
         new UserChatMessage($"Context:\n{context}\n\nQuestion: {req.Question}")
     };
 
-    var completion = await chat.CompleteChatAsync(messages);
+    var completion = await chatClient.CompleteChatAsync(messages);
     var tGen = sw.ElapsedMilliseconds;
 
     app.Logger.LogInformation(
@@ -103,9 +103,8 @@ app.MapPost("/ask", async (AskRequest req, ChunkStore store, IReranker reranker,
     return completion.Value.Content[0].Text;
 });
 
-// Runs the labelled question set through the same retrieval path /ask uses — which is the whole
-// point of it. A number measured against a path nobody uses describes nothing.
-app.MapGet("/eval", async (ChunkStore store, IReranker reranker, EmbeddingClient embeddings) =>
+// Runs the labelled question set through the same retrieval path /ask uses
+app.MapGet("/eval", async (ChunkStore store, IReranker reranker, EmbeddingClient embeddingsClient) =>
 {
     var goldenSetPath = Path.Combine(AppContext.BaseDirectory, "eval", "golden_set.json");
     if (!File.Exists(goldenSetPath))
@@ -123,11 +122,7 @@ app.MapGet("/eval", async (ChunkStore store, IReranker reranker, EmbeddingClient
         await gate.WaitAsync();
         try
         {
-            // No timing here on purpose: this runs 4 questions at once, each of which reranks in
-            // 4 concurrent batches, so anything measured inside it is a contended number and not
-            // comparable to the per-request breakdown /ask reports.
-            var questionVector = new Vector(
-                (await embeddings.GenerateEmbeddingAsync(question.Question)).Value.ToFloats());
+            var questionVector = new Vector((await embeddingsClient.GenerateEmbeddingAsync(question.Question)).Value.ToFloats());
             var candidates = await store.SearchAsync(questionVector);
             var top = (await reranker.RerankAsync(question.Question, candidates)).Take(10).ToList();
 
@@ -146,8 +141,7 @@ app.MapGet("/eval", async (ChunkStore store, IReranker reranker, EmbeddingClient
         totalQuestions = questions.Length,
         // hit-rate@5: how many questions put a correct source in the top 5.
         hitsAtFive = results.Count(r => r.Rank is >= 1 and <= 5),
-        // Mean reciprocal rank: rank 1 scores 1, rank 2 scores 0.5, a miss scores 0. Note the
-        // 1.0 — whole-number division here would score every rank below 1 as zero.
+        // Mean reciprocal rank: rank 1 scores 1, rank 2 scores 0.5, a miss scores 0.
         mrr = results.Sum(r => r.Rank == 0 ? 0 : 1.0 / r.Rank) / results.Length,
         ranks = string.Join(", ", results.OrderBy(r => r.Id).Select(r => $"Q{r.Id} rank {r.Rank}"))
     });

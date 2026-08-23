@@ -6,8 +6,7 @@ namespace AskMyNotes.Evaluation;
 /// One labelled question: what to ask, and which source files would count as a correct answer.
 ///
 /// <see cref="ExpectedSources"/> is a list rather than a single file on purpose — several notes
-/// can genuinely answer the same question, and pretending there is exactly one right document
-/// costs accuracy in the score.
+/// can genuinely answer the same question.
 /// </summary>
 public sealed class GoldenSetQuestion
 {
