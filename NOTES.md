@@ -153,8 +153,7 @@ with snapshots so the parts sum exactly to the total.
 
 The first working version answered in **30.6 seconds** — unusable. Instrumenting the stages
 showed the reranker was almost all of it, scoring candidates one call at a time. Batching it
-(18 candidates per call, 4 concurrent, with a per-batch fallback to distance order if the
-returned score count doesn't match) brought it to **8.2 seconds**. Retrieval quality held at
+(18 candidates per call, 4 concurrent) brought it to **8.2 seconds**. Retrieval quality held at
 15 of 15 questions, with the correct source usually first — the speed-up cost nothing in
 accuracy, which is only knowable because the test set was there to check it against.
 
@@ -296,10 +295,14 @@ is exactly what the metadata header case above needed.
    there's a real risk of fitting the pipeline to this particular set.
 5. **Passages are truncated to 1200 characters before reranking**, so an answer sitting late in
    a long chunk can be invisible to the reranker even though it survived retrieval.
-6. **A failed score parse silently demotes a chunk** — a missing id defaults to `-1`, which sorts
-   to the bottom. It should be distinguishable from a genuine zero.
+6. **A passage the model skips is treated as worse than one it rejected.** The prompt asks for a
+   score of 0 to 10 for every passage, but nothing checks that every one came back. Where an id
+   is missing from the reply, `GetValueOrDefault(i, -1)` fills in `-1` — so "the model did not
+   score this" sorts below "the model scored this zero", and the two are indistinguishable
+   afterwards. A skipped passage should be re-asked, or fall back to its distance order, rather
+   than being quietly sent to the bottom.
 7. **Reranking still costs an LLM call per batch** and is 48% of latency even after batching.
-   A purpose-built reranking model (a cross-encoder) is cheaper per passage and worth measuring
+   A purpose-built reranking model is cheaper per passage and worth measuring
    against, rather than assuming a general-purpose LLM is the right tool for scoring.
 8. **The latency numbers have no noise floor yet.** They're single calls, and `generate` was
    measured at both 2,434ms and 6,715ms — it tracks answer length, not a fixed cost. One early
