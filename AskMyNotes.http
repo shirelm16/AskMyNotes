@@ -1,9 +1,20 @@
 @AskMyNotes_HostAddress = http://localhost:5137
 
-###
+### How many chunks are stored. 0 means the ingest has not run, or found nothing.
+GET {{AskMyNotes_HostAddress}}/dbcheck
+
+### Read every folder in Notes:Roots and replace the stored chunks with what is there.
+GET {{AskMyNotes_HostAddress}}/ingest
+
+### Ask a question. The answer cites the files it came from, and says it does not know
+### rather than inventing one when the notes do not cover it.
 POST {{AskMyNotes_HostAddress}}/ask
 Content-Type: application/json
 
 {
-  "question": "How does the file-inputs feature keep tenants isolated?"
+  "question": "What do my notes say about handling retries?"
 }
+
+### Run the labelled question set through the same retrieval path /ask uses.
+### Needs eval/golden_set.json, which is not in this repository — see NOTES.md.
+GET {{AskMyNotes_HostAddress}}/eval
