@@ -36,7 +36,7 @@ rather than from intuition.
                        |                              LLM reranker, 0-10
              embed in batches of 100                          |
                        |                            top chunks -> context
-   replace all rows in one transaction                        |
+      replace all rows in one transaction                     |
                        |                              gpt-4o-mini answers,
                   chunks table                        citing source files
 ```
@@ -69,8 +69,7 @@ split on sentence boundaries rather than mid-word.
 change; 13 did after.** It was the largest single improvement in the whole tuning log. (The test
 set is 15 questions, each labelled with the file that should answer it — section 3 describes it.)
 
-Later tuning took that to 15 of 15. The run log in `eval/RESULTS.md` stops partway through, at
-13, so the final figures are stated here rather than there.
+Later tuning took it to 15 of 15, with the correct source usually landing first.
 
 ### Two-stage retrieval: cheap recall, then expensive precision
 
@@ -193,6 +192,10 @@ source, and reports:
 
 **The method:** one change per run. Re-ingest, re-measure, write down the result — including the
 runs that made things worse and the ones that changed nothing.
+
+The questions and the run log are not in this repository. The set was labelled against my own
+notes, so the questions quote personal content; [`eval/PLAYBOOK.md`](eval/PLAYBOOK.md) is the
+procedure, which is the part that transfers anyway. What follows is what the log taught.
 
 ### What the log actually taught
 
