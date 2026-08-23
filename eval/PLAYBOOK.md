@@ -78,6 +78,13 @@ it.** Two things that catches:
   results above it were dropped, it becomes 5th. There is no way for it to end up further
   down the list.
 
+  That argument needs one condition, and it is worth checking before relying on it: the
+  correct answer has to survive the removal. Here it always did — the cap keeps each file's
+  three *nearest* chunks, and the score is measured per file rather than per chunk, so a
+  file that was in the results at all was still in them afterwards. Had the cap been able
+  to drop the only chunk that mattered, a worse rank would have been perfectly possible and
+  this whole line of reasoning would have proved nothing.
+
   The measured ranks got worse anyway. Since dropping alone cannot do that, the step had
   to be doing something else as well — and it was: it grouped the results by file and then
   flattened them back into a list, so the output came out ordered file by file instead of
