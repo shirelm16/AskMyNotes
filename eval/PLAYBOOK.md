@@ -150,11 +150,12 @@ produced by the very code that was losing the text.
 - **A score going down does not mean the change was bad.** Fixing a real defect can lower
   the number, because the measurement was flattering you before. Work out *why* it moved
   before deciding what to do about it.
-- **Keep a correct fix even when the score dislikes it.** Reverting real fixes because a
-  rough measurement wobbled is how a system ends up broken and scoring well.
-- **Look at which items moved, not only how many.** Results sitting near the cutoff flip on
-  almost any change. If everything that moved was already borderline, that is reshuffling,
-  not improvement — and if the strongest results never move, the change did not reach them.
+- **Look at how far each item moved, not only at the total.** A result sitting right at the
+  cutoff crosses it on almost nothing: rank 6 becoming rank 5 is what a near-tie falling the
+  other way looks like, and the score jumps a whole point for it. A result going from rank 19
+  to rank 2 cannot happen by accident — something real changed. So when the total improves,
+  check the distances: several long moves are a genuine improvement, and a couple of items
+  stepping over the line by one place are not.
 - **If the measure cannot see the changes you are making, fix the measure first.** A yes/no
   measure only moves when an item crosses a line, so small real gains are invisible to it.
   A rank-based one moves a little whenever anything improves.
@@ -165,11 +166,6 @@ produced by the very code that was losing the text.
 
 ## Know what the metric does not cover
 
-State the limits out loud; they are not weaknesses, they are the scope.
-
 This eval checks the right **file** came back — not the right **chunk**. A file can score
 a hit on a paragraph unrelated to the question. It also never looks at the generated
 answer, so it says nothing about whether the output is any good.
-
-Small sets are noisy: 15 questions means one flip = 6.7%. Treat single-item swings as
-leads to investigate, not proof.
