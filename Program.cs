@@ -45,7 +45,7 @@ app.MapGet("/dbcheck", async () =>
 app.MapGet("/ingest", async () =>
 {
     // Which folders to index. Configured, not hardcoded: these are absolute paths on
-    // whoever's machine is running this, and mine named things I would rather not publish.
+    // whoever's machine is running this.
     var roots = app.Configuration.GetSection("Notes:Roots").Get<string[]>();
     if (roots is null or { Length: 0 })
         return Results.BadRequest(

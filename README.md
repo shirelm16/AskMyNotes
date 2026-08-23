@@ -71,4 +71,4 @@ wherever your notes happen to live. Then call `/ingest` and ask it something —
 
 **[NOTES.md](NOTES.md)** carries the pipeline diagram, every design decision with its
 reasoning, the reranker prompt and why it is shaped that way, and eight known limitations with
-what I would change. [`eval/PLAYBOOK.md`](eval/PLAYBOOK.md) is the method the tuning followed.
+what I would change.

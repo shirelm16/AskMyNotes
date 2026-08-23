@@ -26,9 +26,9 @@ rather than from intuition.
 ```
                     INGEST                                   ASK
                        |                                      |
-        walk *.md under reports/ + memory/           embed the question
+     walk *.md under the configured folders          embed the question
                        |                                      |
-          strip YAML frontmatter                    vector search, LIMIT 100
+        strip the metadata header                   vector search, LIMIT 100
                        |                              (cosine distance)
         SplitIntoUnits  <- structure-aware                    |
                        |                            cap 3 chunks per source file
