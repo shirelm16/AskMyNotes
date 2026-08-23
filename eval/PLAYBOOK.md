@@ -94,30 +94,34 @@ it.** Two things that catches:
 
 Four moves. All are arithmetic done *before* reading the result.
 
-**1. Work out the floor and the ceiling.**
-9 questions were known to be at rank 1, each contributing `1/1 = 1.0`. So MRR was at
-least `9/15 = 0.60` before anything else counted. Q5 and Q11 at rank 2 add `0.5 + 0.5`,
-lifting the floor to `10/15 = 0.667`. The result came back at **exactly 0.60** — the
-absolute floor, reachable only if every question below rank 1 scored zero.
-**Landing exactly on a bound is nearly always a bug.** Real numbers land in between.
+**1. Work out the floor and the ceiling.** From what you already know, what is the lowest
+the number could be, and the highest? If nine questions are known to sit at rank 1, each
+contributes a full 1.0 to mean reciprocal rank, so the total cannot come out below 9/15 =
+0.60 no matter how badly the other six do. Then: **a result landing exactly on a bound is
+nearly always a bug.** Real numbers land somewhere between. This one came back at precisely
+0.60, which was only reachable if every question below rank 1 had contributed nothing at all
+— and that is what a `1 / rank` integer division does.
 
-**2. Work out what random guessing gives.**
-132 files; picking 5 at random gives roughly `5/132 ≈ 4%`. So 4% = the system does
-nothing, 73% = it works. If the first run had come back at 8%, the problem is not
-chunking — it is that the vectors are not being compared at all. Compute this once at
-the start; it tells you which kind of problem you have.
+**2. Work out what guessing would score.** A number means nothing on its own until you know
+what *no skill* looks like. Say each question has one correct file among 130, and the system
+returns 5 files: picking at random would hit the right one about 5/130, roughly 4% of the
+time. That 4% is what a system doing nothing scores.
 
-**3. Ask which directions are impossible.**
-Some changes can only move a number one way — decide that before running. Dedupe removes
-entries from a distance-sorted list, and a file's rank comes from its best chunk, which is
-never removed. So ranks could only improve. **Ranks getting worse was impossible**, which
-proved a bug existed without knowing anything about the code. When the impossible happens,
-the operation is not what you think it is: this was reordering, not filtering.
+Knowing it tells you which kind of problem you have. A first result near the guessing rate
+is not a badly tuned system — it is a broken one, and the bug will be something structural
+like the comparison never happening or the wrong field being searched. A first result far
+above guessing is a tuning problem. Without the baseline both are just numbers on a screen.
 
-**4. Derive the number a second way, from different data.**
-The index held 161 chunks. Separately: one 23KB report at 500-char chunks is ~46 chunks by
-itself. Across 132 files, 161 is off by roughly 10x. Two independent routes to one quantity;
-when they disagree, one is wrong.
+**3. Ask which directions are impossible.** Some changes can only move a number one way, and
+deciding which before you run turns a surprise into a proof. When something moves in a
+direction that cannot happen, the operation is not doing what you think it is — see the
+example above, where a step that only removed results somehow made ranks worse.
+
+**4. Derive the number a second way, from different data.** Work the same quantity out by a
+route that shares nothing with the first, and see whether the two agree. An index reporting
+161 chunks looked reasonable — until a single 23 KB file, chopped at 500 characters, works
+out at about 46 chunks by itself, and there were over a hundred files. Two independent routes
+to one quantity; when they disagree, one of them is wrong.
 
 Checklist for the harness itself:
 - [ ] Verify 2 items by hand against raw output after every harness change
