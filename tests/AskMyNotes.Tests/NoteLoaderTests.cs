@@ -1,13 +1,10 @@
 using AskMyNotes.Chunking;
+using Xunit;
 
 namespace AskMyNotes.Tests;
 
 /// <summary>
 /// Reading notes off disk, and stripping the metadata header before anything is embedded.
-///
-/// The header matters more than it looks. Leaving it in meant field names and a generated id
-/// were stored and searched as though a person had written them, which is what one of the
-/// longest debugging runs in this project was eventually traced back to.
 /// </summary>
 public class NoteLoaderTests : IDisposable
 {
@@ -24,7 +21,7 @@ public class NoteLoaderTests : IDisposable
 
     private string Write(string relativePath, string content)
     {
-        var full = Path.Combine(_root, relativePath);
+        var full = Path.Combine(_root, relativePath); 
         Directory.CreateDirectory(Path.GetDirectoryName(full)!);
         File.WriteAllText(full, content);
         return full;
@@ -101,8 +98,6 @@ public class NoteLoaderTests : IDisposable
     [Fact]
     public async Task Every_chunk_records_the_file_it_came_from()
     {
-        // The answer cites sources, and the eval scores on them, so a chunk without a correct
-        // source is worse than a missing chunk.
         Write("named.md", Body);
 
         var chunks = await _loader.LoadAsync([_root]);

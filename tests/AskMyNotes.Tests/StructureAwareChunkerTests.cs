@@ -74,7 +74,7 @@ public class StructureAwareChunkerTests
 
         // A fence has an opening and a closing marker, so any chunk holding one must contain an
         // even number of markers. An odd count means a chunk ends mid-fence.
-        static int FenceMarkers(string chunk) => chunk.Split("```").Length - 1;
+        static int FenceMarkers(string chunk) => chunk.Split("```").Length - 1; // Split on N markers gives N+1 parts
 
         var withFence = chunks.Where(c => FenceMarkers(c) > 0).ToList();
         Assert.NotEmpty(withFence);
@@ -89,7 +89,7 @@ public class StructureAwareChunkerTests
     [Fact]
     public void No_chunk_exceeds_the_maximum()
     {
-        var chunks = Chunker.Split(string.Join("\n\n", Enumerable.Range(1, 40).Select(i => Filler($"paragraph {i}"))));
+        var chunks = Chunker.Split(string.Join("\n\n", Enumerable.Range(1, 40).Select(i => Filler($"paragraph {i}")))); //chunk length exceeds 1000 characters
 
         Assert.All(chunks, c => Assert.True(c.Length <= 1000, $"a chunk was {c.Length} characters"));
     }
