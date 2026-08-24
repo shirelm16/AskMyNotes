@@ -103,7 +103,26 @@ public sealed class LlmReranker(ChatClient chat) : IReranker
         var parsed = JsonSerializer.Deserialize<RerankResult>(
             completion.Value.Content[0].Text, RerankJson)!;
 
-        var scoreById = parsed.Scores.ToDictionary(s => s.Id, s => s.Score);
-        return batch.Select((c, i) => (chunk: c, score: scoreById.GetValueOrDefault(i, -1))).ToList();
+        return MergeScores(batch, parsed);
+    }
+
+    /// <summary>Score not returned for a passage. Sorts below a real zero — see NOTES.md, limitation 6.</summary>
+    internal const int Unscored = -1;
+
+    /// <summary>
+    /// Pairs each passage with the score the model gave it, by position in the batch.
+    ///
+    /// Separated from the call so it can be tested without one, because its edge case is the
+    /// interesting part: nothing requires the model to return a score for every passage, and a
+    /// passage it skipped is currently treated as worse than one it deliberately scored zero.
+    /// </summary>
+    internal static List<(ScoredChunk Chunk, int Score)> MergeScores(
+        List<ScoredChunk> batch, RerankResult parsed)
+    {
+        var scoreById = parsed.Scores
+            .GroupBy(s => s.Id)
+            .ToDictionary(g => g.Key, g => g.Last().Score);   // a repeated id keeps the last
+
+        return batch.Select((chunk, i) => (chunk, Score: scoreById.GetValueOrDefault(i, Unscored))).ToList();
     }
 }

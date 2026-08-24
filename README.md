@@ -78,6 +78,20 @@ Two things have no defaults and cannot: **`Notes:Roots`**, because your notes ar
 they are, and the **OpenAI key**. Both endpoints say so plainly rather than failing oddly if
 either is missing.
 
+## Tests
+
+```bash
+dotnet test
+```
+
+23 tests, no network and no database: the chunker (where a note gets cut, which is the biggest
+lever on retrieval quality), the loader (reading files, stripping the metadata header), and the
+step that pairs passages with the scores the model returned.
+
+One of them pins a known limitation rather than a feature — a passage the model skipped
+currently sorts below one it scored zero — so that changing it has to be a decision rather than
+an accident.
+
 ## Design notes
 
 **[NOTES.md](NOTES.md)** carries the pipeline diagram, every design decision with its

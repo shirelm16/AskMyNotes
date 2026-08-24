@@ -14,4 +14,15 @@
     <PackageReference Include="Pgvector" Version="0.3.2" />
   </ItemGroup>
 
+  <!-- The app project sits at the repository root, so its default **/*.cs glob would compile
+       the test project's files into the app as well. -->
+  <ItemGroup>
+    <Compile Remove="tests/**" />
+    <Content Remove="tests/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AskMyNotes.Tests" />
+  </ItemGroup>
+
 </Project>
