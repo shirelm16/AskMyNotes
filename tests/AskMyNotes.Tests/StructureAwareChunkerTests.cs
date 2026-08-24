@@ -1,13 +1,8 @@
 using AskMyNotes.Chunking;
+using Xunit;
 
 namespace AskMyNotes.Tests;
 
-/// <summary>
-/// Where a note gets cut is the largest single lever on retrieval quality in this project —
-/// moving from fixed-size splitting to splitting on structure took 10 of the 15 test questions
-/// to 13. These lock in the rules that produced that, because a chunk boundary in the wrong
-/// place is invisible: nothing crashes, the answer just stops being found.
-/// </summary>
 public class StructureAwareChunkerTests
 {
     private static readonly StructureAwareChunker Chunker = new(minSize: 150, maxSize: 1000);
@@ -40,6 +35,7 @@ public class StructureAwareChunkerTests
             """);
 
         Assert.Contains(chunks, c => c.Contains("first item") && !c.Contains("second item"));
+        Assert.Contains(chunks, c => c.Contains("second item") && !c.Contains("first item"));
     }
 
     [Fact]
@@ -56,6 +52,7 @@ public class StructureAwareChunkerTests
             """);
 
         Assert.Contains(chunks, c => c.Contains("First subject") && !c.Contains("Second subject"));
+        Assert.Contains(chunks, c => c.Contains("Second subject") && !c.Contains("First subject"));
     }
 
     [Fact]
@@ -75,11 +72,18 @@ public class StructureAwareChunkerTests
             ```
             """);
 
-        // Any chunk containing a fence must contain a whole one: an even number of markers.
-        var withFence = chunks.Where(c => c.Contains("```")).ToList();
+        // A fence has an opening and a closing marker, so any chunk holding one must contain an
+        // even number of markers. An odd count means a chunk ends mid-fence.
+        static int FenceMarkers(string chunk) => chunk.Split("```").Length - 1;
+
+        var withFence = chunks.Where(c => FenceMarkers(c) > 0).ToList();
         Assert.NotEmpty(withFence);
-        Assert.All(withFence, c => Assert.Equal(0, (c.Split("```").Length - 1) % 2));
-        Assert.Contains(chunks, c => c.Contains("# this is a comment") && c.Contains("echo"));
+        Assert.All(withFence, c => Assert.True(FenceMarkers(c) % 2 == 0,
+            $"a chunk holds {FenceMarkers(c)} fence markers, so a code block was cut in half:\n{c}"));
+
+        // And the fence's contents travelled together: a comment line and a command line
+        // with a blank line between them, which would otherwise have been a boundary.
+        Assert.Contains(withFence, c => c.Contains("# this is a comment") && c.Contains("echo"));
     }
 
     [Fact]
